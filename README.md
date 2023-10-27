@@ -25,7 +25,7 @@ from django.utils.translation import gettext_lazy as _
 from . import PROJECT_EXPORTS
 
 PROJECT_EXPORTS += [
-    ('rocrate', _('as ROCrate JSON'), 'rdmo_plugins_rocrate.exports.ROCrateExport')
+    ('rocrate', _('as ROCrate JSON'), 'rdmo_plugins_rocrate.exports.rocrate.rocrate.ROCrateExport')
 ]
 ```
 
