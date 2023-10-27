@@ -1,0 +1,23 @@
+[project]
+description = "project/research_question/title"
+keywords = "project/research_question/keywords"
+
+[dataset]
+file_name = [
+    "project/dataset/identifier",
+    "project/dataset/id"
+]
+name = [
+    "project/dataset/title",
+    "project/dataset/id"
+]
+description = "project/dataset/description"
+
+[dataset_person]
+name = "project/dataset/creator/name"
+
+#["rocrate.model.organization.Organization"]
+#name = [
+#    "project/partner/name",
+#    "project/dataset/publisher"
+#]
