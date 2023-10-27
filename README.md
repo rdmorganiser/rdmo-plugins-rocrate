@@ -1,73 +1,43 @@
-# rdmo-plugins
+# ROcrate Export Plugin
+This is an export plugin for [RDMO](https://github.com/rdmorganiser/rdmo), that was created during the [RDMO Hackathon 2023](https://www.forschungsdaten.org/index.php/RDMO_Hackathon_2023)
 
-<!--- mdtoc: toc begin -->
+It aims to export RDMO projects in the [RO-Crate](https://researchobject.github.io/ro-crate/) format. The user can select which datasets of the RDMO project are included in the RO-Crate export.  
 
-1. [Synopsis](#synopsis)
-2. [Setup](#setup)
-3. [Other plugins](#other-plugins)
-   1. [RDMO Sensor AWI optionset plugin](#rdmo-sensor-awi-optionset-plugin)<!--- mdtoc: toc end -->
-
-## Synopsis
-
-Import and export plugins for [RDMO](https://github.com/rdmorganiser/rdmo). Included are plugins for [maDMP](https://github.com/RDA-DMP-Common/RDA-DMP-Common-Standard), [DataCite (Kernel 4.3)](https://schema.datacite.org/meta/kernel-4.3/), and the [Radar metadata schema](https://www.radar-service.eu/de/radar-schema).
-
-**Since the RDMO questionaires and the domain does not contain all information needed for maDMP, DataCite, or Radar, the exports will not produce valid files. We will fix this in the future.**
-
-Please visit the [RDMO documentation](https://rdmo.readthedocs.io/en/latest/plugins/index.html#project-export-plugins) for detailed information.
-
-Please note that the re3data plugin was moved to a [seperate repository](https://github.com/rdmorganiser/rdmo-re3data).
+The RDMO attributes are mapped to the RO-Crate metadata properties in the `rdmo-rocrate.toml` config file. The RO-Crate files are constructed with the help of the [ro-crate-py](https://zenodo.org/record/8005944) library.
+The export function creates a zip file containing the `ro-crate-metadata.json`, a JSON-LD file, filled the with metadata values that were extracted from the RDMO project. Individual datasets can be selected to be included in the export, when the project contains datasets. The metadata of each dataset is added to the `ro-crate-metadata.json` file and empty folders are created for each dataset (for the directory tree).
 
 ## Setup
 
-Install the plugins in your RDMO virtual environment using pip (directly from GitHub):
-
+Install the plugin in your RDMO virtual environment using pip (directly from GitHub):
 ```bash
-pip install git+https://github.com/rdmorganiser/rdmo-plugins
+pip install git+https://github.com/rdmorganiser/rdmo-plugins-rocrate.git
 ```
-
-Add the `rdmo_plugins` to the `INSTALLED_APPS` in `config/settings/local.py`:
-
-```python
+The dependencies [`ro-crate-py`](https://pypi.org/project/rocrate/) and [`tomli`](https://pypi.org/project/tomli/) will be installed automatically.
+Add the `rdmo_plugins_rocrate` app to your `INSTALLED_APPS` in `config/settings/local.py``:
+```py
 from . import INSTALLED_APPS
-INSTALLED_APPS = ['rdmo_plugins'] + INSTALLED_APPS
+INSTALLED_APPS = ['rdmo_plugins_rocrate'] + INSTALLED_APPS
 ```
 
-Add the export plugins to the `PROJECT_EXPORTS` in `config/settings/local.py`:
-
-```python
-from django.utils.translation import ugettext_lazy as _
+Add the export plugins to the PROJECT_EXPORTS in config/settings/local.py:
+```py
+from django.utils.translation import gettext_lazy as _
 from . import PROJECT_EXPORTS
 
 PROJECT_EXPORTS += [
-    ('madmp', _('as maDMP JSON'), 'rdmo_plugins.exports.madmp.MaDMPExport'),
-    ('datacite-xml', _('as DataCite XML'), 'rdmo_plugins.exports.datacite.DataCiteExport'),
-    ('radar-xml', _('as RADAR XML'), 'rdmo_plugins.exports.radar.RadarExport'),
-    ('radar', _('directly to RADAR'), 'rdmo_plugins.exports.radar.RadarExportProvider'),
-    ('zenodo', _('directly to Zenodo'), 'rdmo_plugins.exports.zenodo.ZenodoExportProvider')
+    ('rocrate', _('as ROCrate JSON'), 'rdmo_plugins_rocrate.exports.ROCrateExport')
 ]
 ```
 
-Add the import plugins to the `PROJECT_IMPORTS` in `config/settings/local.py`:
-
-```python
-from django.utils.translation import ugettext_lazy as _
-from . import PROJECT_IMPORTS
-
-PROJECT_IMPORTS += [
-    ('madmp', _('from maDMP'), 'rdmo_plugins.imports.madmp.MaDMPImport'),
-    ('datacite', _('from DataCite XML'), 'rdmo_plugins.imports.datacite.DataCiteImport'),
-    ('radar', _('from RADAR XML'), 'rdmo_plugins.imports.radar.RadarImport'),
-]
+As default the export will be as a zip file download.
+For development purposes there is a web preview setting available. This feature can be configured by a boolean setting in the `rdmo-app` with the name `ROCRATE_EXPORT_WEB_PREVIEW`, it can be omitted and will default to False.
+```py
+'''
+A boolean setting to enable the web preview feature of the rocrate export plugin.
+Default: False
+Purpose: Local development
+'''
+ROCRATE_EXPORT_WEB_PREVIEW = True # default is False and this setting can be omitted
 ```
 
-After restarting RDMO, the exports/imports should be usable for all projects.
-
-## Other plugins
-
-### RDMO Sensor AWI optionset plugin
-
-[https://github.com/hafu/rdmo-sensor-awi](https://github.com/hafu/rdmo-sensor-awi)
-
-Queries the Sensor Information System of the Alfred-Wegener-Institut, Helmholtz-Zentrum für Polar- und Meeresforschung (AWI).
-
-This is an example optionset plugin, to show how to gather information from other systems.
+Please visit the [RDMO documentation](https://rdmo.readthedocs.io/en/latest/plugins/index.html#project-export-plugins) for detailed information.
