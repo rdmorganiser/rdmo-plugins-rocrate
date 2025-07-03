@@ -46,3 +46,9 @@ dependencies = [
 
 [project.urls]
 repository = "https://github.com/rdmorganiser/rdmo-plugins-rocrate"
+
+[tool.setuptools.packages.find]
+include = ["rdmo_plugins_rocrate*"]
+
+[tool.setuptools.package-data]
+rdmo_plugins_rocrate = ["templates/**/*"]
